@@ -4,7 +4,7 @@ Examples from the **"Section 35: Deno, CRUD & Databases (MongoDB)"** of the cour
 
 Section 35 covered:
 
-- [ ] App Setup
+- [x] App Setup
 - [ ] Handling CORS Errors
 - [ ] Connecting Deno to MongoDB
 - [ ] Using the MongoDB Client Module
