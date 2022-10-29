@@ -28,30 +28,54 @@ router.get("/todos", async (ctx) => {
 router.post("/todos", async (ctx) => {
   const data = await ctx.request.body({ type: "json" }).value;
   const newTodo: Todo = { text: data.text };
-
   const todosCollection = getDb().collection<dbTodo>("todos");
+  // insertOne() also modifies the object in place adding a _id in it
   const insertedId = await todosCollection.insertOne(newTodo); // This returns the id of the item inserted
+  // We will add a new id field here for the frontend and leave the _id in it as well for this case
   newTodo.id = insertedId.toString();
 
   ctx.response.body = { message: "Todo created", todo: newTodo };
 });
 
 router.put("/todos/:todoId", async (ctx) => {
-  // const tid = ctx.params.todoId;
-  // const data = await ctx.request.body({ type: "json" }).value;
-  // const todoIndex = todos.findIndex((todo) => todo.id === tid);
-  // if (todoIndex >= 0) {
-  //   todos[todoIndex] = { id: todos[todoIndex].id, text: data.text };
-  //   return (ctx.response.body = { message: "Updated todo!" });
-  // }
-  // ctx.response.body = { message: "Could not find todo for this id." };
-  // ctx.response.status = 404;
+  const tid = ctx.params.todoId;
+  let objectId: ObjectId;
+  try {
+    objectId = new ObjectId(tid);
+  } catch (_err) {
+    ctx.response.status = 400;
+    return (ctx.response.body = { message: "Malformed id." });
+  }
+  const data = await ctx.request.body({ type: "json" }).value;
+
+  const todosCollection = getDb().collection<dbTodo>("todos");
+  const { modifiedCount } = await todosCollection.updateOne(
+    { _id: objectId },
+    { $set: { text: data.text } }
+  );
+  if (modifiedCount > 0) {
+    return (ctx.response.body = { message: "Updated todo!" });
+  }
+  ctx.response.body = { message: "Could not find todo for this id." };
+  ctx.response.status = 404;
 });
 
-router.delete("/todos/:todoId", (ctx) => {
-  // const tid = ctx.params.todoId;
-  // todos = todos.filter((todo) => todo.id !== tid);
-  // ctx.response.body = { message: "Todo deleted!" };
+router.delete("/todos/:todoId", async (ctx) => {
+  const tid = ctx.params.todoId;
+  let objectId: ObjectId;
+  try {
+    objectId = new ObjectId(tid);
+  } catch (_err) {
+    ctx.response.status = 400;
+    return (ctx.response.body = { message: "Malformed id." });
+  }
+  const todosCollection = getDb().collection<dbTodo>("todos");
+  const deleteCount = await todosCollection.deleteOne({ _id: objectId });
+  if (deleteCount > 0) {
+    return (ctx.response.body = { message: "Todo deleted!" });
+  }
+  ctx.response.body = { message: "Could not find todo for this id." };
+  ctx.response.status = 404;
 });
 
 export default router;
