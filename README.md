@@ -6,7 +6,7 @@ Section 35 covered:
 
 - [x] App Setup
 - [x] Handling CORS Errors
-- [ ] Connecting Deno to MongoDB
+- [x] Connecting Deno to MongoDB
 - [ ] Using the MongoDB Client Module
 - [ ] Finishing the Deno MongoDB CRUD Operations
 

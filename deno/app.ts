@@ -1,6 +1,10 @@
 import { Application } from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import "https://deno.land/x/dotenv/load.ts";
 
 import todosRoutes from "./routes/todos.ts"; // Do not omit the extension .ts
+import { connect } from "./helpers/db_client.ts";
+
+connect();
 
 const app = new Application();
 

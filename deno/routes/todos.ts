@@ -1,5 +1,7 @@
 import { Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
+import { getDb } from "../helpers/db_client.ts";
+
 const router = new Router();
 
 interface Todo {
@@ -27,7 +29,7 @@ router.put("/todos/:todoId", async (ctx) => {
   const todoIndex = todos.findIndex((todo) => todo.id === tid);
   if (todoIndex >= 0) {
     todos[todoIndex] = { id: todos[todoIndex].id, text: data.text };
-    return ctx.response.body = { message: "Updated todo!" };
+    return (ctx.response.body = { message: "Updated todo!" });
   }
   ctx.response.body = { message: "Could not find todo for this id." };
   ctx.response.status = 404;
